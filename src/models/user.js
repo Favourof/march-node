@@ -16,12 +16,13 @@ const userSchema = new mongoose.Schema({
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       "use valid email Address",
     ],
-    password: {
-      type: String,
-      required: true,
-      minlength: [8, "Password must be at least 8 characters long"],
-    },
   },
+  password: {
+    type: String,
+    required: true,
+    minlength: [8, "Password must be at least 8 characters long"],
+  },
+
   gender: {
     type: String,
     enum: ["male" || "female" || "prefer not to say"],
@@ -35,4 +36,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model(userSchema, "user");
+module.exports = mongoose.model("user", userSchema);
