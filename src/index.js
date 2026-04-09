@@ -19,4 +19,3 @@ app.listen(port, () => {
   console.log(`Hello our server is runinig on port:${port}`);
 });
 
-// mongodb+srv://favourtobiloba200_db_user:0tIXjNU8P5TH5R6Q@march-node.uf6h9wc.mongodb.net/?appName=march-node
