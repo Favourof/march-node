@@ -1,5 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const envObj = require("../config/env");
+const jwt = require("jsonwebtoken")
 
 const register = async (req, res) => {
   const { name, email, password, age, gender } = req.body;
@@ -75,11 +77,48 @@ const login = async (req, res) => {
         .json({ status: false, message: "Invalid Credential" });
     }
 
-    res.status(200).json({ status: true, message: "Login Succefully" });
+    const token = jwt.sign({userId: existingUser._id}, envObj.jwtSecretKey, {expiresIn: envObj.jwtExpries})
+
+    res.status(200).json({ status: true, message: "Login Succefully", token });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error.message, status: false });
   }
 };
 
-module.exports = { register, login };
+const currentUser = async (req, res) =>{
+  const userId = req.user.userId
+
+  console.log(userId, "userId");
+
+  if(!userId){
+    return res.status(404).json(null)
+  }
+
+  const user = await User.findById(userId).select("-password")
+
+  res.json(user)
+
+}
+
+module.exports = { register, login, currentUser };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 🧠 Pause & Explain
+// jwt.sign() = creates token
+// payload = { email }
+// secret = "secretKey"
+// expiresIn = security
