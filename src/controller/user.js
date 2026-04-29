@@ -1,18 +1,20 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const envObj = require("../config/env");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { validationResult } = require("express-validator");
 
 const register = async (req, res) => {
+  const errors = validationResult(req);
+
+  // 2. Check if there are any errors
+  if (!errors.isEmpty()) {
+    // 3. Respond with a 400 status and the list of errors
+    return res.status(400).json({ errors: errors.array()?.[0].msg });
+  }
   const { name, email, password, age, gender } = req.body;
 
   try {
-    if (!name || !email || !password || !age || !gender) {
-      return res
-        .status(402)
-        .json({ status: false, message: "All fields is required" });
-    }
-
     const existingUser = await User.findOne({ email });
     console.log(existingUser);
     if (existingUser) {
@@ -38,11 +40,7 @@ const register = async (req, res) => {
     await newUser.save();
     return res
       .status(200)
-      .json({ status: true, message: "Account created succefully" });
-
-    // console.log(existingUser, "user");
-
-    // console.log("succeful");
+      .json({ status: true, message: "Account created successfully" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error.message, status: false });
@@ -50,6 +48,14 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
+  const errors = validationResult(req);
+
+  // 2. Check if there are any errors
+  if (!errors.isEmpty()) {
+    // 3. Respond with a 400 status and the list of errors
+    return res.status(400).json({ errors: errors.array()?.[0].msg });
+  }
+
   const { email, password } = req.body;
 
   try {
@@ -77,45 +83,34 @@ const login = async (req, res) => {
         .json({ status: false, message: "Invalid Credential" });
     }
 
-    const token = jwt.sign({userId: existingUser._id}, envObj.jwtSecretKey, {expiresIn: envObj.jwtExpries})
+    const token = jwt.sign({ userId: existingUser._id }, envObj.jwtSecretKey, {
+      expiresIn: envObj.jwtExpries,
+    });
 
-    res.status(200).json({ status: true, message: "Login Succefully", token });
+    res
+      .status(200)
+      .json({ status: true, message: "Login successfully", token });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error.message, status: false });
   }
 };
 
-const currentUser = async (req, res) =>{
-  const userId = req.user.userId
+const currentUser = async (req, res) => {
+  const userId = req.user.userId;
 
   console.log(userId, "userId");
 
-  if(!userId){
-    return res.status(404).json(null)
+  if (!userId) {
+    return res.status(404).json(null);
   }
 
-  const user = await User.findById(userId).select("-password")
+  const user = await User.findById(userId).select("-password");
 
-  res.json(user)
-
-}
+  res.json(user);
+};
 
 module.exports = { register, login, currentUser };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // 🧠 Pause & Explain
 // jwt.sign() = creates token

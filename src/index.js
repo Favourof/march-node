@@ -7,6 +7,7 @@ const cors = require("cors");
 
 const app = express();
 app.use(express.json());
+
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -18,11 +19,11 @@ app.use("/api/auth", userRoute);
 app.use("/api/product", productRoute);
 
 app.get("/", (req, res) => {
-  res.send("Hi, welcome to Express js sjkbjskjckbqijok kjdvbjsdbcvdkj");
+  res.send("Hi, welcome to Express js");
 });
 
 connectDb();
 
 app.listen(port, () => {
-  console.log(`Hello our server is runinig on port:${port}`);
+  console.log(`Hello our server is running on port:${port}`);
 });
