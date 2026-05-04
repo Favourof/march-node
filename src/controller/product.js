@@ -1,20 +1,43 @@
+const { cloudinary } = require("../config/cloudinary");
 const Product = require("../models/product");
 
 const addproduct = async (req, res) => {
   try {
-    const { title, description, price, category, image } = req.body;
+    const { title, description, price, category } = req.body;
+    console.log(req.file);
 
-    if (!title || !description || !price || !category || !image) {
+    if (!title || !description || !price || !category || !req.file) {
       return res
         .status(400)
         .json({ status: false, message: "All field are required" });
     }
 
-    const product = await Product.create(req.body);
-    console.log(req.body);
-    return res
-      .status(200)
-      .json({ status: true, message: "product Created Succefully", product });
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "march-products" },
+      async (error, result) => {
+        if (error) {
+          console.log(error);
+
+          return res.status(500).json({ message: "Cloudinary upload failed" });
+        }
+        console.log(result, "from cludinary");
+
+        const product = {
+          ...req.body,
+          image: result.secure_url,
+          publicId: result.public_id,
+        };
+
+        await Product.create(product);
+
+        if (product) {
+          return res
+            .status(201)
+            .json({ message: "product created Succefully", product });
+        }
+      },
+    );
+    stream.end(req.file.buffer);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error.message, status: false });

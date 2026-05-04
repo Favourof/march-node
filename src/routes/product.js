@@ -6,12 +6,11 @@ const {
   updateProduct,
 } = require("../controller/product");
 const { authMiddleWare } = require("../Middleware/verifyToken");
+const { upload } = require("../utils/multer");
 
 const router = express.Router();
 
-// router.use(corsoption);
-
-router.post("/", authMiddleWare, addproduct);
+router.post("/", authMiddleWare, upload.single("image"), addproduct);
 router.get("/", getAllProduct);
 router.get("/:id", getSinglePRoduct);
 router.patch("/:id", updateProduct);
