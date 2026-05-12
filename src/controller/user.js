@@ -87,9 +87,19 @@ const login = async (req, res) => {
       expiresIn: envObj.jwtExpries,
     });
 
-    res
-      .status(200)
-      .json({ status: true, message: "Login successfully", token });
+    const user = {
+      name: existingUser.name,
+      id: existingUser._id,
+      gender: existingUser.gender,
+      email: existingUser.email,
+      age: existingUser.age,
+    };
+    res.status(200).json({
+      status: true,
+      message: "Login successfully",
+      token,
+      user,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error.message, status: false });

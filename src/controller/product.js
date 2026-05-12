@@ -3,8 +3,10 @@ const Product = require("../models/product");
 
 const addproduct = async (req, res) => {
   try {
+    console.log(req.body, "hello");
+
     const { title, description, price, category } = req.body;
-    console.log(req.file);
+    // console.log(req.file);
 
     if (!title || !description || !price || !category || !req.file) {
       return res
@@ -40,7 +42,13 @@ const addproduct = async (req, res) => {
     stream.end(req.file.buffer);
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: error.message, status: false });
+    res
+      .status(400)
+      .json({
+        message: error.message || "validation error",
+        errors: error,
+        status: false,
+      });
   }
 };
 
