@@ -9,6 +9,8 @@ const envObj = {
   cloudName: process.env.CLOUD_NAME,
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
+  appPassword: process.env.APP_PASSWORD,
+  appEMail: process.env.APP_EMAIL,
 };
 
 module.exports = envObj;

@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     min: [18, "User must be 18years older"],
   },
+  isverify: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);

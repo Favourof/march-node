@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const envObj = require("../config/env");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
+const { sendWelcomingEmail } = require("../utils/email");
 
 const register = async (req, res) => {
   const errors = validationResult(req);
@@ -38,6 +39,7 @@ const register = async (req, res) => {
     });
 
     await newUser.save();
+    sendWelcomingEmail(name, email);
     return res
       .status(200)
       .json({ status: true, message: "Account created successfully" });

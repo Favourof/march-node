@@ -4,6 +4,7 @@ const envObj = require("./config/env");
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
 const cors = require("cors");
+const { verifyTransport, sendMail } = require("./utils/email");
 
 const app = express();
 app.use(express.json());
@@ -23,6 +24,9 @@ app.get("/", (req, res) => {
 });
 
 connectDb();
+
+verifyTransport();
+// sendMail();
 
 app.listen(port, () => {
   console.log(`Hello our server is running on port:${port}`);
