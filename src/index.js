@@ -3,6 +3,7 @@ const connectDb = require("./config/db");
 const envObj = require("./config/env");
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
+const cartRoute = require("./routes/cart");
 const cors = require("cors");
 const { verifyTransport, sendMail } = require("./utils/email");
 
@@ -18,6 +19,7 @@ const port = envObj.port;
 
 app.use("/api/auth", userRoute);
 app.use("/api/product", productRoute);
+app.use("/api/cart", cartRoute);
 
 app.get("/", (req, res) => {
   res.send("Hi, welcome to Express js");

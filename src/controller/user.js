@@ -13,7 +13,7 @@ const register = async (req, res) => {
     // 3. Respond with a 400 status and the list of errors
     return res.status(400).json({ errors: errors.array()?.[0].msg });
   }
-  const { name, email, password, age, gender } = req.body;
+  const { name, email, password, age, gender, role } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -36,6 +36,7 @@ const register = async (req, res) => {
       password: hashedPassword,
       age,
       gender,
+      role: role || "user",
     });
 
     await newUser.save();
@@ -85,9 +86,13 @@ const login = async (req, res) => {
         .json({ status: false, message: "Invalid Credential" });
     }
 
-    const token = jwt.sign({ userId: existingUser._id }, envObj.jwtSecretKey, {
-      expiresIn: envObj.jwtExpries,
-    });
+    const token = jwt.sign(
+      { userId: existingUser._id, role: existingUser.role },
+      envObj.jwtSecretKey,
+      {
+        expiresIn: envObj.jwtExpries,
+      }
+    );
 
     const user = {
       name: existingUser.name,
@@ -95,6 +100,7 @@ const login = async (req, res) => {
       gender: existingUser.gender,
       email: existingUser.email,
       age: existingUser.age,
+      role: existingUser.role,
     };
     res.status(200).json({
       status: true,

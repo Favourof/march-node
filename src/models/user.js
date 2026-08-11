@@ -24,7 +24,12 @@ const userSchema = new mongoose.Schema({
 
   gender: {
     type: String,
-    enum: ["male" || "female" || "prefer not to say"],
+    enum: ["male", "female", "prefer not to say"],
+  },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
   },
   dob: {
     type: Date,
