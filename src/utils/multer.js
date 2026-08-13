@@ -40,26 +40,37 @@
 // module.exports = { upload };
 
 const multer = require("multer");
+const path = require("path");
+
 const storage = multer.memoryStorage();
 
-// 1. File Type Validation
+// File Type Validation
 const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/jpeg" ||
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/gif"
-  ) {
-    cb(null, true); // Accept
+  const allowedMimeTypes = /^image\/(jpeg|jpg|png|gif|webp|pjpeg)$/i;
+  const allowedExtensions = /\.(jpeg|jpg|png|gif|webp)$/i;
+
+  const mimeMatch = allowedMimeTypes.test(file.mimetype);
+  const extMatch = allowedExtensions.test(path.extname(file.originalname));
+
+  if (mimeMatch || extMatch) {
+    cb(null, true);
   } else {
-    cb(new Error("Invalid file type, only JPEG and PNG allowed!"), false); // Reject
+    cb(
+      new Error(
+        "Invalid file type. Only JPEG, JPG, PNG, GIF, and WEBP image files are allowed!"
+      ),
+      false
+    );
   }
 };
 
 const upload = multer({
   storage,
-  //   5mb file size
-  limits: { fieldSize: 5 * 1024 * 1024 },
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
   fileFilter: fileFilter,
 });
 
 module.exports = { upload };
+

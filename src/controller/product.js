@@ -3,51 +3,50 @@ const Product = require("../models/product");
 
 const addproduct = async (req, res) => {
   try {
-    console.log(req.body, "hello");
-
     const { title, description, price, category } = req.body;
-    // console.log(req.file);
 
     if (!title || !description || !price || !category || !req.file) {
       return res
         .status(400)
-        .json({ status: false, message: "All field are required" });
+        .json({ status: false, message: "All fields (title, description, price, category, image) are required" });
     }
 
     const stream = cloudinary.uploader.upload_stream(
       { folder: "march-products" },
       async (error, result) => {
         if (error) {
-          console.log(error);
-
-          return res.status(500).json({ message: "Cloudinary upload failed" });
+          return res
+            .status(500)
+            .json({ status: false, message: "Cloudinary upload failed", error: error.message });
         }
-        console.log(result, "from cludinary");
 
-        const product = {
-          ...req.body,
-          image: result.secure_url,
-          publicId: result.public_id,
-        };
+        try {
+          const productData = {
+            ...req.body,
+            image: result.secure_url,
+            publicId: result.public_id,
+          };
 
-        await Product.create(product);
+          const product = await Product.create(productData);
 
-        if (product) {
           return res
             .status(201)
-            .json({ message: "product created Succefully", product });
+            .json({ status: true, message: "Product created successfully", product });
+        } catch (dbError) {
+          return res.status(500).json({
+            status: false,
+            message: dbError.message || "Database error while saving product",
+          });
         }
       },
     );
     stream.end(req.file.buffer);
   } catch (error) {
-    console.log(error);
-    res
+    return res
       .status(400)
       .json({
-        message: error.message || "validation error",
-        errors: error,
         status: false,
+        message: error.message || "Validation error",
       });
   }
 };
@@ -57,13 +56,12 @@ const getAllProduct = async (req, res) => {
     const product = await Product.find();
     return res.status(200).json({
       status: true,
-      message: "get product Successful",
+      message: "Products retrieved successfully",
       product,
       count: product.length,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: error.message, status: false });
+    return res.status(500).json({ status: false, message: error.message || "Error fetching products" });
   }
 };
 
@@ -75,15 +73,14 @@ const getSinglePRoduct = async (req, res) => {
     if (!product) {
       return res
         .status(404)
-        .json({ status: false, message: "Product not Found" });
+        .json({ status: false, message: "Product not found" });
     }
 
     return res
       .status(200)
-      .json({ status: true, message: "Successful", product });
+      .json({ status: true, message: "Product retrieved successfully", product });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: error.message, status: false });
+    return res.status(500).json({ status: false, message: error.message || "Error fetching product" });
   }
 };
 
@@ -95,7 +92,7 @@ const updateProduct = async (req, res) => {
     if (!existingProduct) {
       return res
         .status(404)
-        .json({ status: false, message: "Product not Found" });
+        .json({ status: false, message: "Product not found" });
     }
 
     let updateData = { ...req.body };
@@ -105,7 +102,7 @@ const updateProduct = async (req, res) => {
         try {
           await cloudinary.uploader.destroy(existingProduct.publicId);
         } catch (err) {
-          console.log("Cloudinary image delete error during update:", err);
+          console.error("Cloudinary image delete error during update:", err.message);
         }
       }
 
@@ -130,10 +127,9 @@ const updateProduct = async (req, res) => {
 
     return res
       .status(200)
-      .json({ status: true, message: "Product Update Successfully", product });
+      .json({ status: true, message: "Product updated successfully", product });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: error.message, status: false });
+    return res.status(500).json({ status: false, message: error.message || "Error updating product" });
   }
 };
 
@@ -145,14 +141,14 @@ const deleteProduct = async (req, res) => {
     if (!product) {
       return res
         .status(404)
-        .json({ status: false, message: "Product not Found" });
+        .json({ status: false, message: "Product not found" });
     }
 
     if (product.publicId) {
       try {
         await cloudinary.uploader.destroy(product.publicId);
       } catch (err) {
-        console.log("Cloudinary image delete error:", err);
+        console.error("Cloudinary image delete error:", err.message);
       }
     }
 
@@ -162,8 +158,7 @@ const deleteProduct = async (req, res) => {
       .status(200)
       .json({ status: true, message: "Product deleted successfully" });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: error.message, status: false });
+    return res.status(500).json({ status: false, message: error.message || "Error deleting product" });
   }
 };
 
@@ -174,3 +169,4 @@ module.exports = {
   updateProduct,
   deleteProduct,
 };
+

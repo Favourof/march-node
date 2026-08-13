@@ -1,18 +1,16 @@
 const mongoose = require("mongoose");
 const envObj = require("./env");
 
-const connectDb = async (req, res) => {
+const connectDb = async () => {
   try {
     const connect = await mongoose.connect(envObj.mongoDbUrl);
     if (connect) {
-      console.log("MomgoDb connected");
+      console.log("MongoDB connected successfully");
     }
   } catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .json({ status: "error", message: "internal server error" });
+    console.error("MongoDB connection error:", error.message);
   }
 };
 
 module.exports = connectDb;
+

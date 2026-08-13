@@ -37,8 +37,7 @@ const getCart = async (req, res) => {
       totalAmount: totals.totalAmount,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ status: false, message: error.message });
+    return res.status(500).json({ status: false, message: error.message || "Error retrieving cart" });
   }
 };
 
@@ -93,8 +92,7 @@ const addToCart = async (req, res) => {
       totalAmount: totals.totalAmount,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ status: false, message: error.message });
+    return res.status(500).json({ status: false, message: error.message || "Error adding item to cart" });
   }
 };
 
@@ -145,8 +143,7 @@ const updateCartItem = async (req, res) => {
       totalAmount: totals.totalAmount,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ status: false, message: error.message });
+    return res.status(500).json({ status: false, message: error.message || "Error updating cart item" });
   }
 };
 
@@ -177,8 +174,7 @@ const removeFromCart = async (req, res) => {
       totalAmount: totals.totalAmount,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ status: false, message: error.message });
+    return res.status(500).json({ status: false, message: error.message || "Error removing item from cart" });
   }
 };
 
@@ -200,8 +196,7 @@ const clearCart = async (req, res) => {
       totalAmount: 0,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ status: false, message: error.message });
+    return res.status(500).json({ status: false, message: error.message || "Error clearing cart" });
   }
 };
 

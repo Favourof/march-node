@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "https://march-react-cohort.vercel.app",
+    origin: "*",
   }),
 );
 const port = envObj.port;
@@ -21,8 +21,31 @@ app.use("/api/auth", userRoute);
 app.use("/api/product", productRoute);
 app.use("/api/cart", cartRoute);
 
+const multer = require("multer");
+
 app.get("/", (req, res) => {
   res.send("Hi, welcome to Express js");
+});
+
+// Global Error Handler Middleware
+app.use((err, req, res, next) => {
+  console.error("Global Error Handler caught an error:", err);
+
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      status: false,
+      message: `File upload error: ${err.message}`,
+    });
+  }
+
+  if (err) {
+    return res.status(400).json({
+      status: false,
+      message: err.message || "An error occurred during request processing",
+    });
+  }
+
+  next();
 });
 
 connectDb();
