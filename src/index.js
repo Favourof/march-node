@@ -10,11 +10,7 @@ const { verifyTransport, sendMail } = require("./utils/email");
 const app = express();
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: "*",
-  }),
-);
+app.use(cors());
 const port = envObj.port;
 
 app.use("/api/auth", userRoute);
